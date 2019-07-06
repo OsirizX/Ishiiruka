@@ -166,16 +166,23 @@ bool VideoBackend::Initialize(void *window_handle)
   if (s_create_device && (window_handle == nullptr))
     return false;
 
-  InitBackendInfo();
+  //InitBackendInfo();
   InitializeShared();
   m_window_handle = window_handle;
+
+#if 0
+  if (s_create_device && FAILED(D3D::Create(reinterpret_cast<HWND>(m_window_handle))))
+  {
+    return false;
+  }
+#endif
   return true;
 }
 
 void VideoBackend::Video_Prepare()
 {
   // internal interfaces
-  g_renderer = std::make_unique<Renderer>(m_window_handle);
+  g_renderer = std::make_unique<DX11::Renderer>(m_window_handle);
   g_renderer->Init();
   g_texture_cache = std::make_unique<TextureCache>();
   g_vertex_manager = std::make_unique<VertexManager>();

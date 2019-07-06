@@ -3,18 +3,18 @@
 
 #include <libretro.h>
 //#include "VideoBackends/Null/Render.h"
+#include "Core/HW/Memmap.h"
 #include "VideoBackends/Software/SWRenderer.h"
 #include "VideoBackends/Software/SWTexture.h"
 #include "VideoCommon/VideoConfig.h"
-#include "Core/HW/Memmap.h"
 #ifndef __APPLE__
 #include "VideoBackends/Vulkan/VulkanLoader.h"
 #endif
 #ifdef _WIN32
 #include "VideoBackends/DX11/D3DBase.h"
+#include "VideoBackends/DX11/D3DShader.h"
 #include "VideoBackends/DX11/D3DState.h"
 #include "VideoBackends/DX11/D3DUtil.h"
-#include "VideoBackends/DX11/D3DShader.h"
 #include "VideoBackends/DX11/DXTexture.h"
 #include "VideoBackends/DX11/FramebufferManager.h"
 #include "VideoBackends/DX11/PixelShaderCache.h"
@@ -47,21 +47,22 @@ void WaitForPresentation();
 class SWRenderer : public ::SWRenderer
 {
 public:
-  void SwapImpl(u32 xfbAddr, u32 fbWidth, u32 fbStride, u32 fbHeight, const EFBRectangle& rc, u64 ticks, float Gamma)
+  void SwapImpl(u32 xfbAddr, u32 fbWidth, u32 fbStride, u32 fbHeight, const EFBRectangle& rc,
+                u64 ticks, float Gamma)
   {
-     if (g_ActiveConfig.bUseXFB)
-     {
-        EfbInterface::yuv422_packed* xfb = (EfbInterface::yuv422_packed*) Memory::GetPointer(xfbAddr);
-        UpdateColorTexture(xfb, fbWidth, fbHeight);
-     }
-     else
-     {
-        EfbInterface::BypassXFB(GetCurrentColorTexture(), fbWidth, fbHeight, rc, Gamma);
-     }
+    if (g_ActiveConfig.bUseXFB)
+    {
+      EfbInterface::yuv422_packed* xfb = (EfbInterface::yuv422_packed*)Memory::GetPointer(xfbAddr);
+      UpdateColorTexture(xfb, fbWidth, fbHeight);
+    }
+    else
+    {
+      EfbInterface::BypassXFB(GetCurrentColorTexture(), fbWidth, fbHeight, rc, Gamma);
+    }
 
-     video_cb(GetCurrentColorTexture(), fbWidth, fbHeight, fbWidth * 4);
+    video_cb(GetCurrentColorTexture(), fbWidth, fbHeight, fbWidth * 4);
 
-     UpdateActiveConfig();
+    UpdateActiveConfig();
   }
 };
 
@@ -83,9 +84,7 @@ public:
   DX11Renderer() : DX11::Renderer((HWND)0) {}
   void SwapImpl(u32 xfbAddr, u32 fbWidth, u32 fbStride, u32 fbHeight, const EFBRectangle& rc, u64 ticks, float Gamma)
   {
-     /* TODO/FIXME */
-#if 0
-    DX11::D3DTexture2D* xfb_texture = static_cast<DX11::DXTexture*>(texture)->GetRawTexIdentifier();
+    DX11::D3DTexture2D* xfb_texture = DX11::FramebufferManager::GetEFBColorTexture();
 
     ID3D11RenderTargetView* nullView = nullptr;
     DX11::D3D::context->OMSetRenderTargets(1, &nullView, nullptr);
@@ -105,7 +104,7 @@ public:
       UpdateDrawRectangle();
       g_framebuffer_manager.reset();
       g_framebuffer_manager =
-          std::make_unique<DX11::FramebufferManager>(m_target_width, m_target_height);
+          std::make_unique<DX11::FramebufferManager>(m_target_width, m_target_height, DXGI_FORMAT_R8G8B8A8_UNORM);
       static constexpr std::array<float, 4> clear_color{{0.f, 0.f, 0.f, 1.f}};
       DX11::D3D::context->ClearRenderTargetView(
           DX11::FramebufferManager::GetEFBColorTexture()->GetRTV(), clear_color.data());
@@ -117,7 +116,6 @@ public:
     // begin next frame
     RestoreAPIState();
     DX11::D3D::stateman->Restore();
-#endif
   }
 };
 #endif

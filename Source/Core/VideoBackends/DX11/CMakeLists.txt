@@ -57,6 +57,9 @@ set(LIBS
   videocommon
   SOIL
   common
+	d3d11
+	dxguid
 )
 
 add_dolphin_library(videodx11 "${SRCS}" "${LIBS}")
+

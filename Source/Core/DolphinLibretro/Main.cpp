@@ -190,6 +190,7 @@ void retro_run(void)
       g_renderer->Shutdown();
       g_renderer.reset();
       g_renderer = std::make_unique<Libretro::Video::DX11Renderer>();
+      g_renderer->Init();
     }
 #endif
     while (!Core::IsRunningAndStarted())

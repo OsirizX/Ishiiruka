@@ -13,6 +13,7 @@
 #include "InputCommon/ControllerInterface/Device.h"
 
 // enable disable sources
+#ifndef __LIBRETRO__
 #ifdef _WIN32
 #define CIFACE_USE_XINPUT
 #define CIFACE_USE_DINPUT
@@ -31,6 +32,7 @@
 #endif
 #if defined(USE_PIPES)
 #define CIFACE_USE_PIPES
+#endif
 #endif
 
 //

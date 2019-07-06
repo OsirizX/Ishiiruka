@@ -6,9 +6,9 @@
 
 // TODO: ugly
 #ifdef _WIN32
-#include "VideoBackends/DX9/VideoBackend.h"
+//#include "VideoBackends/DX9/VideoBackend.h"
 #include "VideoBackends/DX11/VideoBackend.h"
-#include "VideoBackends/D3D12/VideoBackend.h"
+//#include "VideoBackends/D3D12/VideoBackend.h"
 #endif
 #include "VideoBackends/OGL/VideoBackend.h"
 #include "VideoBackends/Software/VideoBackend.h"
@@ -34,14 +34,16 @@ void VideoBackendBase::PopulateList()
   {
     g_available_video_backends.push_back(std::make_unique<DX11::VideoBackend>());
     // More robust way to check for D3D12 support than (unreliable) OS version checks.
+#if 0
     HMODULE d3d12_module = LoadLibraryA("d3d12.dll");
     if (d3d12_module != NULL)
     {
       FreeLibrary(d3d12_module);
       g_available_video_backends.push_back(std::make_unique<DX12::VideoBackend>());
     }
+#endif
   }
-  g_available_video_backends.push_back(std::make_unique<DX9::VideoBackend>());
+  //g_available_video_backends.push_back(std::make_unique<DX9::VideoBackend>());
 #endif
   // disable OGL video Backend while is merged from master
   g_available_video_backends.push_back(std::make_unique<OGL::VideoBackend>());

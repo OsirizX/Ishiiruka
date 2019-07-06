@@ -251,9 +251,10 @@ void Renderer::PrepareFrameDumpBuffer(u32 width, u32 height)
   CHECK(hr == S_OK, "Create screenshot staging texture");
   D3D::SetDebugObjectName(m_frame_dump_staging_texture.get(), "staging screenshot texture");
 }
-Renderer::Renderer(void *window_handle)
+Renderer::Renderer(void* window_handle)
+       : ::Renderer()
 {
-  D3D::Create((HWND)window_handle);
+  //D3D::Create((HWND)window_handle);
 
   m_backbuffer_width = D3D::GetBackBufferWidth();
   m_backbuffer_height = D3D::GetBackBufferHeight();
@@ -287,6 +288,7 @@ void Renderer::Init()
   FramebufferManagerBase::SetLastXfbHeight(MAX_XFB_HEIGHT);
   CalculateTargetSize();
   PixelShaderManager::SetEfbScaleChanged();
+  //g_framebuffer_manager = std::make_unique<FramebufferManager>(m_target_width, m_target_height, DXGI_FORMAT_R8G8B8A8_UNORM);
   SetupDeviceObjects();
 
   m_post_processor = std::make_unique<D3DPostProcessor>();
@@ -306,8 +308,9 @@ void Renderer::Init()
 
 Renderer::~Renderer()
 {
-  m_post_processor.reset();
+  //m_post_processor.reset();
   TeardownDeviceObjects();
+#if 0
   if (m_3d_vision_texture)
   {
     m_3d_vision_texture->Release();
@@ -320,8 +323,10 @@ Renderer::~Renderer()
   m_frame_dump_render_texture = nullptr;
   m_frame_dump_staging_texture.reset();
   D3D::EndFrame();
-  D3D::Present();
+  if (D3D::swapchain)
+    D3D::Present();
   D3D::Close();
+#endif
 }
 
 void Renderer::RenderText(const std::string& text, int left, int top, u32 color)

@@ -41,5 +41,3 @@ set(LIBS
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/Externals/d3dx9)
-
-add_dolphin_library(videodx9 "${SRCS}" "${LIBS}")

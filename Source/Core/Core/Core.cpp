@@ -359,8 +359,8 @@ static void CpuThread(const std::optional<std::string>& savestate_path, bool del
   else
   {
     Common::SetCurrentThreadName("CPU-GPU thread");
-    video_backend->Video_Prepare();
-    Host_Message(WM_USER_CREATE);
+    //video_backend->Video_Prepare();
+    //Host_Message(WM_USER_CREATE);
   }
 
 #ifdef USE_ANALYTICS
@@ -425,8 +425,8 @@ static void FifoPlayerThread(const std::optional<std::string>& savestate_path,
   }
   else
   {
-    video_backend->Video_Prepare();
-    Host_Message(WM_USER_CREATE);
+    //video_backend->Video_Prepare();
+    //Host_Message(WM_USER_CREATE);
     Common::SetCurrentThreadName("FIFO-GPU thread");
   }
 
@@ -607,9 +607,6 @@ void EmuThread()
   // This adds the SyncGPU handler to CoreTiming, so now CoreTiming::Advance might block.
   Fifo::Prepare();
 
-  // Thread is no longer acting as CPU Thread
-  UndeclareAsCPUThread();
-
   // Setup our core, but can't use dynarec if we are compare server
   if (core_parameter.iCPUCore != PowerPC::CORE_INTERPRETER &&
     (!core_parameter.bRunCompareServer || core_parameter.bRunCompareClient))
@@ -632,9 +629,10 @@ void EmuThread()
     // This thread, after creating the EmuWindow, spawns a CPU
     // thread, and then takes over and becomes the video thread
     Common::SetCurrentThreadName("Video thread");
+    UndeclareAsCPUThread();
 
-    video_backend->Video_Prepare();
-    Host_Message(WM_USER_CREATE);
+    //video_backend->Video_Prepare();
+    //Host_Message(WM_USER_CREATE);
 
     // Spawn the CPU thread
     s_cpu_thread = std::thread(cpuThreadFunc, savestate_path, delete_savestate);

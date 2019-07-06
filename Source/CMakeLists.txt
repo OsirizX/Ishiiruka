@@ -19,11 +19,12 @@ else()
   # Enable C++17, but fall back to C++14 if it isn't available.
   # CMAKE_CXX_STANDARD cannot be used here because we require C++14 or newer, not any standard.
   check_and_add_flag(CXX17 -std=c++17)
-  if(NOT FLAG_CXX_CXX17)    
+  if(NOT FLAG_CXX_CXX17)
     set(CMAKE_CXX_STANDARD 14)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
   endif()
+
   # These compat headers must not be in the include path when building with MSVC,
   # because it currently does not support __has_include_next / #include_next.
   include_directories(SYSTEM Core/Common/Compat)
@@ -33,7 +34,6 @@ endif()
 # but some dependencies require them (LLVM, libav).
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-D__STDC_CONSTANT_MACROS)
-# DEPRECATED: When introducing new libraries, do it explicitly.
 macro(add_dolphin_library lib srcs libs)
   add_library(${lib} STATIC ${srcs})
   target_link_libraries(${lib} PUBLIC ${libs})

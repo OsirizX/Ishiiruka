@@ -36,7 +36,7 @@ if(WIN32)
     ControllerInterface/XInput/XInput.cpp
     ControllerInterface/ForceFeedback/ForceFeedbackDevice.cpp
   )
-   target_link_libraries(inputcommon
+  target_link_libraries(inputcommon
     PRIVATE
     dinput8
   )

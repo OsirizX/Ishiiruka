@@ -18,7 +18,7 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/Externals/Libretro/Include)
 include_directories(${CMAKE_SOURCE_DIR}/Externals/Vulkan/Include)
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
 
 set_target_properties(ishiiruka_libretro PROPERTIES PREFIX "")
 if(ANDROID)
@@ -33,10 +33,19 @@ endif()
 
 if(NOT MSVC AND NOT CLANG)
    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+else()
+   target_link_libraries(ishiiruka_libretro PRIVATE
+      core
+      uicommon
+      ${LIBS}
+   )
 endif()
 
-target_link_libraries(ishiiruka_libretro PRIVATE
-  core
-  uicommon
-  ${LIBS}
-)
+if(LIBRETRO_STATIC)
+   target_link_libraries(ishiiruka_libretro PRIVATE
+      core
+      uicommon
+      ${LIBS}
+      "-static-libgcc -static-libstdc++"
+   )
+endif()

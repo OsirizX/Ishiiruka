@@ -17,6 +17,7 @@ class Renderer : public ::Renderer
 {
 public:
   Renderer(void *window_handle);
+  Renderer(int backbuffer_width, int backbuffer_height);
   ~Renderer();
   void Init() override;
   void SetBlendingState(const BlendingState& state) override;

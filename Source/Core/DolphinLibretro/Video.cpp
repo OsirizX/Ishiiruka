@@ -110,10 +110,10 @@ static void ContextReset(void)
   }
 #endif
 
-  if (Core::GetState() != Core::State::Uninitialized)
-     g_video_backend->Video_Prepare();
-  else
-     g_video_backend->Initialize(nullptr);
+  g_video_backend->InitBackendInfo();
+  g_Config.Refresh();
+  g_video_backend->Initialize(nullptr);
+  g_video_backend->Video_Prepare();
   g_video_backend->CheckInvalidState();
 }
 
